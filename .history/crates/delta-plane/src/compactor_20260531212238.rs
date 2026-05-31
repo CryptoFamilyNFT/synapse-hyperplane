@@ -167,6 +167,9 @@ pub enum CompactionError {
     
     #[error("Pubkey not found in dictionary: {0}")]
     PubkeyNotFound(Pubkey),
+    
+    #[error("Base locator error: {0}")]
+    BaseLocator(#[from] std::io::Error),
 }
 
 #[cfg(test)]

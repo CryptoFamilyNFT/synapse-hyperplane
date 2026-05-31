@@ -9,6 +9,7 @@ use parking_lot::RwLock;
 use solana_sdk::pubkey::Pubkey;
 
 use hyperplane_types::{AccountLocation, StorageType};
+use base_locator::LocatorError;
 use crate::delta_locator::DeltaLocator;
 
 /// Compaction result
@@ -71,8 +72,8 @@ impl Compactor {
     pub fn compact(
         &self,
         delta_locator: &DeltaLocator,
-        _base_locator: &dyn std::any::Any,
-        _dictionary: &dyn std::any::Any,
+        _base_locator: &RocksLocator,
+        dictionary: &PersistentPubkeyDictionary,
         _output_path: &Path,
     ) -> Result<CompactionResult, CompactionError> {
         let mut state = self.state.write();
@@ -167,6 +168,9 @@ pub enum CompactionError {
     
     #[error("Pubkey not found in dictionary: {0}")]
     PubkeyNotFound(Pubkey),
+    
+    #[error("Base locator error: {0}")]
+    BaseLocator(#[from] base_locator::LocatorError),
 }
 
 #[cfg(test)]

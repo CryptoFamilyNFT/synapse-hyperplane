@@ -9,6 +9,7 @@ use parking_lot::RwLock;
 use solana_sdk::pubkey::Pubkey;
 
 use hyperplane_types::{AccountLocation, StorageType};
+use base_locator::LocatorError;
 use crate::delta_locator::DeltaLocator;
 
 /// Compaction result
@@ -71,8 +72,8 @@ impl Compactor {
     pub fn compact(
         &self,
         delta_locator: &DeltaLocator,
-        _base_locator: &dyn std::any::Any,
-        _dictionary: &dyn std::any::Any,
+        _base_locator: &RocksLocator,
+        dictionary: &PersistentPubkeyDictionary,
         _output_path: &Path,
     ) -> Result<CompactionResult, CompactionError> {
         let mut state = self.state.write();
@@ -92,10 +93,11 @@ impl Compactor {
         let _latest_deltas: HashMap<Pubkey, AccountLocation> = HashMap::new();
         
         // Merge with base layer - placeholder for future implementation
+        #[allow(unused_mut)]
         let mut new_locations = Vec::new();
-        for (_pubkey, delta_location) in &_latest_deltas {
+        for (_pubkey, delta_location) in \&_latest_deltas {
             // Get dictionary ID for pubkey
-            if let Some(_dict_id) = _latest_deltas.get(&_pubkey) {
+            if let Some(_dict_id) = _latest_deltas.get(\&_pubkey) {
                 // Create new base location
                 let base_location = AccountLocation {
                     file_id: 0, // Will be assigned by segment writer
@@ -167,6 +169,9 @@ pub enum CompactionError {
     
     #[error("Pubkey not found in dictionary: {0}")]
     PubkeyNotFound(Pubkey),
+    
+    #[error("Base locator error: {0}")]
+    BaseLocator(#[from] base_locator::LocatorError),
 }
 
 #[cfg(test)]
