@@ -31,6 +31,7 @@ pub use redb_impl::*;
 #[cfg(feature = "redb-backend")]
 pub use pubkey_dict_redb::PersistentPubkeyDictionary;
 
+#[cfg(feature = "rocksdb-backend")]
 pub use crate::pubkey_dict_redb::PersistentPubkeyDictionary;
 
 pub use checksum::*;
