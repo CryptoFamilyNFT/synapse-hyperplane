@@ -5,6 +5,11 @@
 //! - `redb-backend` (default): Pure Rust, ideal for macOS development
 //! - `rocksdb-backend`: Production-grade for Linux/Ubuntu deployments
 
+#[cfg(all(feature = "redb-backend", feature = "rocksdb-backend"))]
+compile_error!(
+    "base-locator: only one backend can be enabled at a time. Use either `redb-backend` or `rocksdb-backend`, not both."
+);
+#[cfg(feature = "redb-backend")]
 pub mod redb_impl;
 
 #[cfg(feature = "rocksdb-backend")]
@@ -13,21 +18,18 @@ pub mod rocksdb_impl;
 pub mod checksum;
 pub mod rocks_locator;
 
-// PersistentPubkeyDictionary backend modules
 #[cfg(feature = "redb-backend")]
 pub mod pubkey_dict_redb;
 
 #[cfg(feature = "rocksdb-backend")]
 pub mod pubkey_dict_rocksdb;
 
-// Re-export backend-specific locator implementation
-#[cfg(feature = "rocksdb-backend")]
-pub use rocksdb_impl::*;
-
 #[cfg(feature = "redb-backend")]
 pub use redb_impl::*;
 
-// Re-export PersistentPubkeyDictionary from the selected backend
+#[cfg(feature = "rocksdb-backend")]
+pub use rocksdb_impl::*;
+
 #[cfg(feature = "redb-backend")]
 pub use pubkey_dict_redb::PersistentPubkeyDictionary;
 
@@ -43,5 +45,4 @@ pub use rocks_locator::{
     Result,
 };
 
-// Common types
 pub use hyperplane_types::AccountLocation;

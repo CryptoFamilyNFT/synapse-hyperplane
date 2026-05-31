@@ -6,7 +6,7 @@ license.workspace = true
 description = "Pubkey to AccountLocation mapper with pluggable storage backend (redb/RocksDB)"
 
 [features]
-default = ["redb-backend"]
+default = ["rocksdb-backend"]
 redb-backend = ["dep:redb"]
 rocksdb-backend = ["dep:rocksdb"]
 
