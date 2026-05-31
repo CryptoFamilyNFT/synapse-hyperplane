@@ -238,7 +238,7 @@ pub struct LocationIterator<'a> {
     stats: Arc<RwLock<LocatorStats>>,
 }
 
-impl Iterator for LocationIterator {
+impl<'a> Iterator for LocationIterator<'a> {
     type Item = Result<(Pubkey, AccountLocation)>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -250,7 +250,7 @@ impl Iterator for LocationIterator {
                         pubkey_bytes.copy_from_slice(&key_bytes);
                         let pubkey = Pubkey::from(pubkey_bytes);
                         
-                        match deserialize_location(&value_bytes) {
+                        match deserialize_location(value_bytes) {
                             Ok(location) => {
                                 let mut stats = self.stats.write();
                                 stats.reads += 1;
