@@ -1,0 +1,31 @@
+[package]
+name = "base-locator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pubkey to AccountLocation mapper with pluggable storage backend (redb/RocksDB)"
+
+[features]
+default = ["redb-backend"]
+redb-backend = ["dep:redb"]
+rocksdb-backend = ["dep:rocksdb"]
+
+[dependencies]
+hyperplane-types.workspace = true
+solana-sdk.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+byteorder.workspace = true
+num_cpus.workspace = true
+sha2.workspace = true
+blake3.workspace = true
+
+# Storage backends (feature-gated)
+redb = { workspace = true, optional = true }
+# RocksDB is NOT in workspace deps - must be specified here for optional feature
+rocksdb = { version = "0.23", features = ["snappy", "lz4", "zstd", "zlib"], optional = true }
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true

@@ -1,0 +1,49 @@
+[package]
+name = "synapse-hyperplane"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Synapse Hyperplane Accounts Engine - Main binary"
+
+[[bin]]
+name = "synapse-base-scanner"
+path = "src/bin/base-scanner.rs"
+
+[[bin]]
+name = "synapse-rpc"
+path = "src/bin/rpc.rs"
+
+[[bin]]
+name = "synapse-delta-plane"
+path = "src/bin/delta-plane.rs"
+
+[[bin]]
+name = "synapse-sidecar"
+path = "src/bin/sidecar.rs"
+
+[dependencies]
+# Internal crates
+hyperplane-types.workspace = true
+account-file-mapper.workspace = true
+base-locator.workspace = true
+cache-plane.workspace = true
+rpc-read-provider.workspace = true
+geyser-bridge.workspace = true
+delta-plane.workspace = true
+index-fabric.workspace = true
+query-orchestrator.workspace = true
+slot-reconciler.workspace = true
+control-plane.workspace = true
+
+# Common
+solana-sdk.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+clap = { version = "4.5", features = ["derive"] }
+toml = "0.8"
+parking_lot.workspace = true

@@ -1,0 +1,19 @@
+[package]
+name = "geyser-bridge"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Geyser plugin bridge for live account updates"
+
+[dependencies]
+hyperplane-types.workspace = true
+solana-sdk.workspace = true
+agave-geyser-plugin-interface.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+thiserror.workspace = true
+memmap2.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]

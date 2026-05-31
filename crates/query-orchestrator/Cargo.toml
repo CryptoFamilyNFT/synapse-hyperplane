@@ -1,0 +1,16 @@
+[package]
+name = "query-orchestrator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Query planner and orchestrator for getProgramAccounts"
+
+[dependencies]
+hyperplane-types.workspace = true
+index-fabric.workspace = true
+solana-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+base64.workspace = true
+parking_lot.workspace = true
+log = "0.4"

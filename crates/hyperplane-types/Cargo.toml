@@ -1,0 +1,22 @@
+[package]
+name = "hyperplane-types"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Core types and data structures for Synapse Hyperplane Accounts Engine"
+
+[dependencies]
+solana-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+bincode.workspace = true
+thiserror.workspace = true
+bytes.workspace = true
+byteorder.workspace = true
+sha2.workspace = true
+blake3.workspace = true
+roaring.workspace = true
+base64 = "0.22.1"
+
+[dev-dependencies]
+criterion.workspace = true

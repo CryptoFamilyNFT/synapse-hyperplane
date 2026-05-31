@@ -1,0 +1,197 @@
+# Synapse Hyperplane Production Configuration
+# For 312 GB RAM machines running Agave 4.0.0
+
+[engine]
+name = "synapse-hyperplane"
+mode = "sidecar"
+memory_budget_gb = 96
+num_shards = 64
+log_level = "info"
+
+[agave]
+# Path to Agave accounts directory
+accounts_path = "/mnt/agave/accounts"
+
+# Fallback RPC endpoint (for accounts not yet indexed)
+rpc_fallback = "http://127.0.0.1:8899"
+
+# Geyser ring buffer path (shared memory)
+geyser_ring_path = "/dev/shm/synapse-geyser.ring"
+
+# Geyser ring buffer size (MB)
+geyser_ring_size_mb = 512
+
+[base_mapper]
+# Enable mmap for zero-copy reads
+mmap = true
+
+# Number of parallel scan threads
+scan_threads = 24
+
+# Path to base locator RocksDB
+locator_path = "/mnt/nvme/synapse/base-locator"
+
+# Path to pubkey dictionary
+pubkey_dictionary_path = "/mnt/nvme/synapse/pubkey-dict"
+
+# Detect AppendVec headers (set false for plain account files)
+detect_appendvec = false
+
+# Validate account records during scan
+validate_accounts = true
+
+# Log progress every N files
+progress_interval = 100
+
+[delta_plane]
+# Path to delta segment store
+segment_path = "/mnt/nvme/synapse/delta-segments"
+
+# Target segment size (MB)
+segment_size_mb = 1024
+
+# Flush interval (ms)
+flush_interval_ms = 10
+
+# Fsync policy: "never", "rooted", "always"
+fsync_policy = "rooted"
+
+# Max slots per segment
+max_slots_per_segment = 10000
+
+# Compaction threshold (slots since last compaction)
+compaction_threshold_slots = 100000
+
+[index_fabric]
+# Path to bitmap store
+bitmap_store_path = "/mnt/nvme/synapse/bitmap-store"
+
+# Enable program index
+program_index = true
+
+# Enable token owner index
+token_owner_index = true
+
+# Enable token mint index
+token_mint_index = true
+
+# Enable data size index
+data_size_index = true
+
+# Enable adaptive memcmp indexes
+adaptive_memcmp = true
+
+# Min query count to trigger adaptive index creation
+adaptive_index_min_queries = 5000
+
+# Max adaptive indexes to maintain
+adaptive_index_max_count = 1000
+
+[cache]
+# L1 hot account cache size (GB)
+l1_hot_accounts_gb = 24
+
+# L1 bitmap cache size (GB)
+l1_bitmaps_gb = 32
+
+# Encoded response cache size (GB)
+encoded_response_gb = 12
+
+# DragonflyDB URL (L2 distributed cache)
+dragonfly_url = "redis://127.0.0.1:6379"
+
+# Cache TTL for processed commitment (seconds)
+processed_ttl_secs = 60
+
+# Cache TTL for confirmed commitment (seconds)
+confirmed_ttl_secs = 300
+
+# Cache TTL for finalized commitment (seconds)
+finalized_ttl_secs = 3600
+
+[rpc]
+# Bind address
+bind = "0.0.0.0:8898"
+
+# Number of worker threads
+workers = 32
+
+# Max batch size for getMultipleAccounts
+max_batch_size = 1000
+
+# Enable getProgramAccountsV2 (paginated)
+enable_get_program_accounts_v2 = true
+
+# Fallback to Agave RPC for missing accounts
+fallback_to_agave = true
+
+# Request timeout (ms)
+request_timeout_ms = 30000
+
+# Max concurrent queries
+max_concurrent_queries = 1000
+
+# Rate limit (requests per second per IP)
+rate_limit_per_ip = 100
+
+[commitment]
+# Default commitment level
+default = "processed"
+
+# Enable rooted compaction
+rooted_compaction = true
+
+# Max processed lag slots before warning
+max_processed_lag_slots = 64
+
+# Slot advancement check interval (ms)
+slot_check_interval_ms = 100
+
+[advisor]
+# Enable adaptive index advisor
+enabled = true
+
+# Min query count to consider index creation
+min_query_count = 5000
+
+# Min scan cost (accounts) to justify index
+min_scan_cost_accounts = 100000
+
+# Auto-create indexes (set false for manual review)
+auto_create_indexes = false
+
+[metrics]
+# Enable Prometheus metrics
+enabled = true
+
+# Metrics bind address
+bind = "0.0.0.0:9090"
+
+# Metrics prefix
+prefix = "synapse"
+
+[health]
+# Health check endpoint
+bind = "0.0.0.0:9091"
+
+# Enable admin API
+admin_enabled = true
+
+# Admin API token (set via env: SYNAPSE_ADMIN_TOKEN)
+admin_token_env = "SYNAPSE_ADMIN_TOKEN"
+
+[logging]
+# Log format: "json" or "text"
+format = "json"
+
+# Log level: "error", "warn", "info", "debug", "trace"
+level = "info"
+
+# Log file path (empty = stdout)
+file_path = "/var/log/synapse/hyperplane.log"
+
+# Log rotation (MB)
+rotation_size_mb = 100
+
+# Keep N rotated logs
+rotation_keep = 10

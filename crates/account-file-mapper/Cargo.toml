@@ -1,0 +1,19 @@
+[package]
+name = "account-file-mapper"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Mmap-based scanner for Agave /accounts files"
+
+[dependencies]
+hyperplane-types.workspace = true
+solana-sdk.workspace = true
+memmap2.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+rayon = "1.10"
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true

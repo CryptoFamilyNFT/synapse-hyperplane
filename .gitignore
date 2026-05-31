@@ -1,0 +1,41 @@
+# Build artifacts
+/target/
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Test data
+test_accounts/
+*.test
+
+# Config secrets
+*.env
+.env.local
+id.json
+keypair.json
+
+# Database files
+*.ldb
+*.sst
+rocksdb/
+*.db
+
+# Segment files
+delta-segments/
+base-segments/
+
+# Shared memory
+/dev/shm/synapse-*
+
+# OS files
+.DS_Store
+Thumbs.db

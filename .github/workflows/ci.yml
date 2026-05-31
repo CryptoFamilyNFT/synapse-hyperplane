@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Build and test on macOS (redb backend)
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+    
+    - name: Cache Cargo registry
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+    
+    - name: Build workspace (redb backend)
+      run: cargo build --workspace --features redb-backend --verbose
+    
+    - name: Run tests (redb backend)
+      run: cargo test --workspace --features redb-backend --verbose
+    
+    - name: Check formatting
+      run: cargo fmt -- --check
+    
+    - name: Run Clippy lints
+      run: cargo clippy --workspace --features redb-backend -- -D warnings
+
+  # Build on Linux (RocksDB backend)
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+    
+    - name: Install RocksDB dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y librocksdb-dev build-essential pkg-config libssl-dev
+    
+    - name: Cache Cargo registry
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+    
+    - name: Build workspace (RocksDB backend)
+      run: cargo build --workspace --features rocksdb-backend --no-default-features --verbose
+    
+    - name: Run tests (RocksDB backend)
+      run: cargo test --workspace --features rocksdb-backend --no-default-features --verbose
+    
+    - name: Check formatting
+      run: cargo fmt -- --check
+    
+    - name: Run Clippy lints
+      run: cargo clippy --workspace --features rocksdb-backend --no-default-features -- -D warnings
+
+  # Performance benchmarks (optional, manual trigger)
+  benchmarks:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Install RocksDB
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y librocksdb-dev
+    
+    - name: Run performance tests
+      run: |
+        cargo test --workspace --features rocksdb-backend --no-default-features -- --ignored --nocapture
+      env:
+        RUST_LOG: info

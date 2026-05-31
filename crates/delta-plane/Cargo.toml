@@ -1,0 +1,19 @@
+[package]
+name = "delta-plane"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Delta write store for Geyser updates (append-only segments)"
+
+[dependencies]
+hyperplane-types.workspace = true
+base-locator.workspace = true
+cache-plane.workspace = true
+geyser-bridge.workspace = true
+solana-sdk.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+thiserror.workspace = true
+memmap2.workspace = true
+crc32fast = "1.4"
