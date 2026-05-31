@@ -25,7 +25,7 @@ license = "Apache-2.0"
 # - default: redb (sviluppo macOS, nessun C++)
 # - rocksdb: produzione Linux/Ubuntu (performance migliori)
 [workspace.features]
-default = ["rocksdb-backend"]
+default = ["redb-backend"]
 redb-backend = []
 rocksdb-backend = []
 

@@ -13,35 +13,29 @@ pub mod rocksdb_impl;
 pub mod checksum;
 pub mod rocks_locator;
 
-// PersistentPubkeyDictionary backend modules
+// Moduli PersistentPubkeyDictionary per ogni backend
 #[cfg(feature = "redb-backend")]
 pub mod pubkey_dict_redb;
 
 #[cfg(feature = "rocksdb-backend")]
 pub mod pubkey_dict_rocksdb;
 
-// Re-export backend-specific locator implementation
+// Re-export backend-specific implementations
 #[cfg(feature = "rocksdb-backend")]
 pub use rocksdb_impl::*;
 
 #[cfg(feature = "redb-backend")]
 pub use redb_impl::*;
 
-// Re-export PersistentPubkeyDictionary from the selected backend
+// Re-export PersistentPubkeyDictionary dal modulo corretto
 #[cfg(feature = "redb-backend")]
 pub use pubkey_dict_redb::PersistentPubkeyDictionary;
 
 #[cfg(feature = "rocksdb-backend")]
-pub use pubkey_dict_rocksdb::PersistentPubkeyDictionary;
+pub use crate::pubkey_dict_redb::PersistentPubkeyDictionary;
 
 pub use checksum::*;
-pub use rocks_locator::{
-    deserialize_location,
-    serialize_location,
-    LocatorError,
-    LocatorStats,
-    Result,
-};
+pub use rocks_locator::{serialize_location, deserialize_location, LocatorError, LocatorStats, Result};
 
 // Common types
 pub use hyperplane_types::AccountLocation;
