@@ -173,7 +173,7 @@ impl RocksLocator {
     pub fn iter(&self) -> Result<LocationIterator> {
         let cf = self.cf_locations();
         let read_opts = {
-            let read_guard = self.read_opts.read();
+            let _read_guard = self.read_opts.read();
             let mut opts = ReadOptions::default();
             opts.fill_cache(true); // Default to true
             opts.set_verify_checksums(false); // Default to false
@@ -234,7 +234,7 @@ impl RocksLocator {
 /// Location iterator for RocksDB
 #[cfg(feature = "rocksdb-backend")]
 pub struct LocationIterator {
-    iter: rocksdb::DBIteratorWithThreadMode<'static, DB>,
+    iter: rocksdb::DBIteratorWithThreadMode<'_, DB>,
     stats: Arc<RwLock<LocatorStats>>,
 }
 

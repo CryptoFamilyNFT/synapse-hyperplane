@@ -15,9 +15,6 @@ pub mod rocks_locator;
 
 // Re-export based on active feature
 #[cfg(feature = "redb-backend")]
-pub mod pubkey_dict_redb;
-
-#[cfg(feature = "redb-backend")]
 pub use redb_impl::*;
 
 #[cfg(feature = "rocksdb-backend")]
