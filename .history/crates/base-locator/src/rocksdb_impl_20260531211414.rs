@@ -250,7 +250,7 @@ impl<'a> Iterator for LocationIterator<'a> {
                         pubkey_bytes.copy_from_slice(&key_bytes);
                         let pubkey = Pubkey::from(pubkey_bytes);
                         
-                        match deserialize_location(&value_bytes) {
+                        match deserialize_location(value_bytes) {
                             Ok(location) => {
                                 let mut stats = self.stats.write();
                                 stats.reads += 1;

@@ -14,11 +14,14 @@ pub mod checksum;
 pub mod rocks_locator;
 
 // Re-export based on active feature
+#[cfg(feature = "redb-backend")]
+pub use redb_impl::*;
+
 #[cfg(feature = "rocksdb-backend")]
 pub use rocksdb_impl::*;
 
 #[cfg(feature = "redb-backend")]
-pub use redb_impl::*;
+pub use pubkey_dict_redb::*;
 
 pub use checksum::*;
 pub use rocks_locator::{serialize_location, deserialize_location, LocatorError, LocatorStats, Result};

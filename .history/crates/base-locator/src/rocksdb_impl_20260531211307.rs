@@ -238,7 +238,7 @@ pub struct LocationIterator<'a> {
     stats: Arc<RwLock<LocatorStats>>,
 }
 
-impl<'a> Iterator for LocationIterator<'a> {
+impl Iterator for LocationIterator {
     type Item = Result<(Pubkey, AccountLocation)>;
 
     fn next(&mut self) -> Option<Self::Item> {

@@ -233,12 +233,12 @@ impl RocksLocator {
 
 /// Location iterator for RocksDB
 #[cfg(feature = "rocksdb-backend")]
-pub struct LocationIterator<'a> {
-    iter: rocksdb::DBIteratorWithThreadMode<'a, DB>,
+pub struct LocationIterator {
+    iter: rocksdb::DBIteratorWithThreadMode<'_, DB>,
     stats: Arc<RwLock<LocatorStats>>,
 }
 
-impl<'a> Iterator for LocationIterator<'a> {
+impl Iterator for LocationIterator {
     type Item = Result<(Pubkey, AccountLocation)>;
 
     fn next(&mut self) -> Option<Self::Item> {
