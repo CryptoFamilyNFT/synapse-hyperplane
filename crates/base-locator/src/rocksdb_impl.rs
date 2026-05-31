@@ -233,8 +233,8 @@ impl RocksLocator {
 
 /// Location iterator for RocksDB
 #[cfg(feature = "rocksdb-backend")]
-pub struct LocationIterator {
-    iter: rocksdb::DBIteratorWithThreadMode<'_, DB>,
+pub struct LocationIterator<'a> {
+    iter: rocksdb::DBIteratorWithThreadMode<'a, DB>,
     stats: Arc<RwLock<LocatorStats>>,
 }
 
