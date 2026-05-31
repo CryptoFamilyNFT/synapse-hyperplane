@@ -12,10 +12,9 @@ use rocksdb::{
     Options, ReadOptions, WriteBatch, WriteOptions, DB,
 };
 use solana_sdk::pubkey::Pubkey;
-use std::error::Error;
 use std::path::Path;
 use std::sync::Arc;
-use tracing::{info, warn};
+use tracing::info;
 
 /// Column family names
 #[cfg(feature = "rocksdb-backend")]
@@ -44,7 +43,8 @@ impl RocksLocator {
         let mut block_opts = BlockBasedOptions::default();
         block_opts.set_bloom_filter(10.0, false); // 10 bits per key, block-based
         block_opts.set_block_size(64 * 1024); // 64 KB blocks
-        block_opts.set_block_cache(Cache::new_lru_cache(256 * 1024 * 1024)); // 256 MB cache
+        let cache = Cache::new_lru_cache(256 * 1024 * 1024); // 256 MB cache
+        block_opts.set_block_cache(&cache); // 256 MB cache
         
         // Configure DB options
         let mut db_opts = Options::default();
@@ -175,12 +175,12 @@ impl RocksLocator {
         let read_opts = {
             let read_guard = self.read_opts.read();
             let mut opts = ReadOptions::default();
-            opts.fill_cache(read_guard.fill_cache());
-            opts.set_verify_checksums(read_guard.verify_checksums());
+            opts.fill_cache(true); // Default to true
+            opts.set_verify_checksums(false); // Default to false
             opts
         };
         
-        let iter = self.db.iterator_cf_opt(cf, &read_opts, rocksdb::IteratorMode::Start);
+        let iter = self.db.iterator_cf_opt(cf, read_opts, rocksdb::IteratorMode::Start);
         
         Ok(LocationIterator {
             iter,
