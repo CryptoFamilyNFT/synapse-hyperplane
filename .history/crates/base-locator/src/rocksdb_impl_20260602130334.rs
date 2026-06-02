@@ -116,8 +116,12 @@ impl RocksLocator {
                     let location = deserialize_location(&bytes)?;
                     results.push(Some(location));
                 }
-                Ok(None) => results.push(None),
-                Err(e) => return Err(LocatorError::RocksDbError(e)),
+                Ok(None) => {
+                    results.push(None);
+                }
+                Err(e) => {
+                    return Err(LocatorError::RocksDbError(e));
+                }
             }
         }
         
@@ -170,15 +174,13 @@ impl RocksLocator {
     }
 
     /// Iterate over all locations
-    pub fn iter(&self) -> Result<LocationIterator> {
+    pub fn iter(&self) -> Result<LocationIterator<DB>> {
         let cf = self.cf_locations();
-        let read_opts = {
-            let _read_guard = self.read_opts.read();
-            let mut opts = ReadOptions::default();
-            opts.fill_cache(true); // Default to true
-            opts.set_verify_checksums(false); // Default to false
-            opts
-        };
+        drop(self.read_opts.read()); // Release lock
+        
+        let mut read_opts = ReadOptions::default();
+        read_opts.set_verify_checksums(false);
+        read_opts.fill_cache(true);
         
         let iter = self.db.iterator_cf_opt(cf, read_opts, rocksdb::IteratorMode::Start);
         
@@ -233,20 +235,20 @@ impl RocksLocator {
 
 /// Location iterator for RocksDB
 #[cfg(feature = "rocksdb-backend")]
-pub struct LocationIterator<'a> {
-    iter: rocksdb::DBIteratorWithThreadMode<'a, DB>,
+pub struct LocationIterator<DB: rocksdb::DBAccess> {
+    iter: rocksdb::DBIteratorWithThreadMode<DB>,
     stats: Arc<RwLock<LocatorStats>>,
 }
 
-impl<'a> Iterator for LocationIterator<'a> {
+impl<DB: rocksdb::DBAccess> Iterator for LocationIterator<DB> {
     type Item = Result<(Pubkey, AccountLocation)>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(result) = self.iter.next() {
             match result {
-                Ok(result) => {
-                    let key_slice: &[u8] = result.0.as_ref();
-                    let value_slice: &[u8] = result.1.as_ref();
+                Ok((key_bytes, value_bytes)) => {
+                    let key_slice: &[u8] = &key_bytes;
+                    let value_slice: &[u8] = &value_bytes;
                     
                     if key_slice.len() == 32 {
                         let mut pubkey_bytes = [0u8; 32];

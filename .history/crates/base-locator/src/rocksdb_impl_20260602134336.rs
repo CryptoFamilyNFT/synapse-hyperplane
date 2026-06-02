@@ -250,10 +250,10 @@ impl<'a> Iterator for LocationIterator<'a> {
                     
                     if key_slice.len() == 32 {
                         let mut pubkey_bytes = [0u8; 32];
-                        pubkey_bytes.copy_from_slice(key_slice);
+                        pubkey_bytes.copy_from_slice(&key_bytes);
                         let pubkey = Pubkey::from(pubkey_bytes);
                         
-                        match deserialize_location(value_slice) {
+                        match deserialize_location(&value_bytes) {
                             Ok(location) => {
                                 let mut stats = self.stats.write();
                                 stats.reads += 1;
