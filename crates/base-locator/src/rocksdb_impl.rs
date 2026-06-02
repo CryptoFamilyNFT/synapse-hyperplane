@@ -244,8 +244,11 @@ impl<'a> Iterator for LocationIterator<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(result) = self.iter.next() {
             match result {
-                Ok((key_bytes, value_bytes)) => {
-                    if key_bytes.len() == 32 {
+                Ok(result) => {
+                    let key_slice: &[u8] = result.0.as_ref();
+                    let value_slice: &[u8] = result.1.as_ref();
+                    
+                    if key_slice.len() == 32 {
                         let mut pubkey_bytes = [0u8; 32];
                         pubkey_bytes.copy_from_slice(&key_bytes);
                         let pubkey = Pubkey::from(pubkey_bytes);
