@@ -2,7 +2,7 @@
 //!
 //! This module contains common types used by both redb and rocksdb backends.
 
-use hyperplane_types::{AccountLocation, StorageType};
+use hyperplane_types::AccountLocation;
 use solana_sdk::pubkey::Pubkey;
 use thiserror::Error;
 
@@ -65,19 +65,13 @@ pub struct LocatorStats {
 /// Serialize AccountLocation to bytes (45 bytes total)
 pub fn serialize_location(location: &AccountLocation) -> Result<Vec<u8>> {
     let mut bytes = Vec::with_capacity(45);
-    bytes.extend_from_slice(&location.file_id.to_le_bytes()); // 8 bytes
-    bytes.extend_from_slice(&location.offset.to_le_bytes()); // 8 bytes
-    bytes.extend_from_slice(&location.stored_size.to_le_bytes()); // 4 bytes
-    bytes.extend_from_slice(&location.data_offset.to_le_bytes()); // 4 bytes
-    bytes.extend_from_slice(&location.data_len.to_le_bytes()); // 4 bytes
     bytes.extend_from_slice(&location.slot.to_le_bytes()); // 8 bytes
-    bytes.extend_from_slice(&location.write_version.to_le_bytes()); // 8 bytes
-    let storage_type_byte = match location.storage_type {
-        StorageType::Base => 0u8,
-        StorageType::Delta => 1u8,
-        StorageType::Compacted => 2u8,
-    };
-    bytes.push(storage_type_byte); // 1 byte
+    bytes.extend_from_slice(&location.offset.to_le_bytes()); // 8 bytes
+    bytes.extend_from_slice(&location.file_id.to_le_bytes()); // 8 bytes
+    bytes.extend_from_slice(&location.data_size.to_le_bytes()); // 8 bytes
+    bytes.extend_from_slice(&location.owner_index.to_le_bytes()); // 4 bytes
+    bytes.extend_from_slice(&location.program_index.to_le_bytes()); // 4 bytes
+    bytes.push(location.flags); // 1 byte
     Ok(bytes)
 }
 
@@ -90,36 +84,22 @@ pub fn deserialize_location(bytes: &[u8]) -> Result<AccountLocation> {
         )));
     }
     
-    let file_id = u64::from_le_bytes(bytes[0..8].try_into().unwrap());
+    let slot = u64::from_le_bytes(bytes[0..8].try_into().unwrap());
     let offset = u64::from_le_bytes(bytes[8..16].try_into().unwrap());
-    let stored_size = u32::from_le_bytes(bytes[16..20].try_into().unwrap());
-    let data_offset = u32::from_le_bytes(bytes[20..24].try_into().unwrap());
-    let data_len = u32::from_le_bytes(bytes[24..28].try_into().unwrap());
-    let slot = u64::from_le_bytes(bytes[28..36].try_into().unwrap());
-    let write_version = u64::from_le_bytes(bytes[36..44].try_into().unwrap());
-    let storage_type_byte = bytes[44];
-    
-    let storage_type = match storage_type_byte {
-        0 => StorageType::Base,
-        1 => StorageType::Delta,
-        2 => StorageType::Compacted,
-        _ => {
-            return Err(LocatorError::SerializationError(format!(
-                "Invalid storage type: {}",
-                storage_type_byte
-            )));
-        }
-    };
+    let file_id = u64::from_le_bytes(bytes[16..24].try_into().unwrap());
+    let data_size = u64::from_le_bytes(bytes[24..32].try_into().unwrap());
+    let owner_index = u32::from_le_bytes(bytes[32..36].try_into().unwrap());
+    let program_index = u32::from_le_bytes(bytes[36..40].try_into().unwrap());
+    let flags = bytes[40];
     
     Ok(AccountLocation {
-        file_id,
-        offset,
-        stored_size,
-        data_offset,
-        data_len,
         slot,
-        write_version,
-        storage_type,
+        offset,
+        file_id,
+        data_size,
+        owner_index,
+        program_index,
+        flags,
     })
 }
 

@@ -2,7 +2,7 @@
 //!
 //! This module contains common types used by both redb and rocksdb backends.
 
-use hyperplane_types::{AccountLocation, StorageType};
+use hyperplane_types::AccountLocation;
 use solana_sdk::pubkey::Pubkey;
 use thiserror::Error;
 
